@@ -10,5 +10,5 @@
 - fingerprint: MEDION/X1030X/X1030X:7.0/NRD90M/1493255033:user/release-keys
 - is_ab: false
 - brand: MEDION
-- branch: qssi-user-12-SKQ1.211006.001-21.12.27-release-keys
+- branch: full_medion_g1010-user-7.0-NRD90M-1493255116-release-keys
 - repo: medion_x1030x_dump
