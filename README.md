@@ -1,0 +1,14 @@
+# full_medion_g1010-user 7.0 NRD90M 1493255116 release-keys
+- manufacturer: lenovo
+- platform: mt6753
+- codename: X1030X
+- flavor: full_medion_g1010-user
+- release: 7.0
+- id: NRD90M
+- incremental: 20170427_0920
+- tags: release-keys
+- fingerprint: MEDION/X1030X/X1030X:7.0/NRD90M/1493255033:user/release-keys
+- is_ab: false
+- brand: MEDION
+- branch: qssi-user-12-SKQ1.211006.001-21.12.27-release-keys
+- repo: medion_x1030x_dump

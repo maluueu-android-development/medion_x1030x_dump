@@ -1,0 +1,5 @@
+<permissions>
+	<feature name="com.medion.android" />
+	<feature name="com.medion.android.tablet" />
+	<feature name="com.medion.android.x1030x" />
+</permissions>

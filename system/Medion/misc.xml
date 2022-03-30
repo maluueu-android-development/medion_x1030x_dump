@@ -1,0 +1,542 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<misc version="1">
+<!-- =================================================================== -->
+<!-- get device Props                                                    -->
+<!-- =================================================================== -->
+    <getprop product="ro.build.product"/>
+    <getprop serial="ro.serialno"/>
+    <variable books="true"/>
+
+  <feature
+     gps="android.hardware.location.gps"
+     compass="android.hardware.sensor.compass" 
+     infrared="android.hardware.consumerir"/>
+
+<!-- =================================================================== -->
+<!-- Fetch SKU info, ask for ALDI if necessary.                          -->
+<!-- =================================================================== -->
+    <if country="BE" sku.country="LU">
+    <!-- LU locale does't exist -->
+        <variable country="LU"/>
+    </if>
+    <if country="TR" sku.country="DE">
+        <variable country="DE"/>
+    </if>
+    <if serial="|unknown|0123456789ABCDEF">
+    <!-- Factory s/n cases      -->
+    <variable sku.variant="A"/>
+    </if>
+<if country="DE" sku.country="AT" sku.variant="A">
+<!-- failsafe for Hofer -->
+ 	<variable market="ALDI"/>
+    <variable country="AT"/>
+</if>
+<elseif country="DE" sku.country="CH" sku.variant="A">
+<!-- failsafe for Hofer -->
+ 	<variable market="ALDI"/>
+    <variable country="CH"/>
+</elseif>
+<elseif country="DE" sku.variant="N">
+    <!-- Germany ALDI North fix -->
+        <variable market="ALDI"/>
+        <variable region="Nord"/>
+</elseif>
+    <elseif country="DE" sku.variant="S">
+    <!-- Germany ALDI South fix -->
+        <variable market="ALDI"/>
+        <variable region="Sued"/>
+    </elseif>
+    <elseif sku.variant="A">
+    <!-- Germany, ask for ALDI  -->
+        <variable market="ALDI"/>
+        <if country="DE" version="0">
+            <getaldi/>
+    <!-- Select ALDI "region"   -->
+        </if>
+    </elseif>
+    <elseif sku.variant="B">
+    <!-- Media Markt projects   -->
+        <variable market="MEDIA"/>
+    </elseif>
+    <elseif sku.variant="I">
+    <!-- Int'l sales projects   -->
+        <variable market="INTL"/>
+    </elseif>
+    <elseif sku.variant="M">
+    <!-- MEDION Shop projects   -->
+        <variable market="MEDION"/>
+    </elseif>
+    <elseif sku.variant="F">
+    <!-- Factory test config    -->
+        <variable market="FACTORY"/>
+    </elseif>
+    
+<!-- =================================================================== -->
+<!-- Factory case comes first                                            -->
+<!-- =================================================================== -->
+
+    <if market="FACTORY">
+<!-- no factory case anymore
+    <apkfile title="Battery Test" source="factory/BatteryTest.apk" progress="true"/>
+    <apkfile title="Test Screen" source="factory/TestScreen.apk" progress="true"/>
+    <apkfile title="Date/Time" source="factory/DateAndTime.apk" progress="true"/>
+    <gotoxy screen="1" x="0" y="0"/>
+    <shortcut title="Battery Test" type="app" target="com.medion.android.batterytest"/>
+    <shortcut title="Test Screen" type="app" target="com.noser.droidinfo"/>
+    <shortcut title="Gyroscope Demo" type="app" target="com.techvision.gyroscopedemo"/>
+    <gotoxy screen="1" x="5" y="0"/>
+    <shortcut title="Date/Time" type="app" target="com.medion.android.installer/com.medion.android.factory.DateTimeClient"/>
+    <gotoxy screen="1" x="0" y="1"/>
+    <shortcut title="Date/Time" type="app" target="com.medion.android.dateandtime/.ClientActivity"/>
+    <shortcut title="Diagnostics" type="app" target="com.medion.android.diagnostics"/>
+    -->
+    </if>
+
+<!-- =================================================================== -->
+<!-- Fresh install case                                                  -->
+<!-- =================================================================== -->
+    <elseif version="0" user="0">
+    
+    <!-- =============================================================== -->
+    <!-- MEDION applications that are always present                     -->
+    <!-- =============================================================== -->
+
+    <!-- every in-house app installed via medion.mk -->
+    
+    <!-- =============================================================== -->
+    <!-- Third party applications that are always present.               -->
+    <!-- =============================================================== -->
+        <apkfile title="McAfee" source="apps/com.wsandroid.suite.apk" msn="40050501"/>
+        <apkfile title="McAfee Tracking" source="apps/com.wsandroid.suite.plugin.apk" msn="40050501" progress="false"/>
+    <!-- =============================================================== -->
+    <!-- MEDION only third party applications                            -->
+    <!-- =============================================================== -->
+        <unless market="ALDI">
+            <apkfile title="News Republic" source="apps/com.mobilesrepublic.appy.apk" msn="40056818"/>
+            <apkfile title="HRS" source="apps/com.hrs.b2c.android.apk" msn="40042027"/>
+        
+            <if country="DE">
+                <apkfile title="HRS Key DE" source="apps/hrs_and_medionDE_keysource.apk" progress="false"/>
+            </if>
+            <else>
+                <apkfile title="HRS Key Int'l" source="apps/hrs_and_medionINTERNATIONAL_keysource.apk" progress="false"/>
+            </else>
+        </unless>
+        
+    <!-- =============================================================== -->
+    <!-- General applications that depend on language/country/market     -->
+    <!-- =============================================================== -->
+        <unless country="NL" market="ALDI">
+            <apkfile title="Skype" source="apps/com.skype.raider.apk" msn="40042177"/>
+            <apkfile title="TeamViewer" source="apps/com.teamviewer.quicksupport.market.apk" msn="40046954"/>
+        <apkfile title="TeamViewer Add-On" source="apps/com.teamviewer.quicksupport.addon.medionS1035X.apk" progress="false"/>
+            <apkfile title="eBay" source="apps/com.ebay.mobile.apk"/>
+
+            <!--ebay tracking files-->
+            <if country="DE" market="ALDI" region="Sued">
+            <apkfile title="eBay Tracking EC64" source="apps/ec64_signed.apk" progress="false" msn="40049111"/>
+            </if>
+            <else>
+            <apkfile title="eBay Tracking EC15" source="apps/ec15_signed.apk" progress="false" msn="20051344"/>
+            </else>
+
+        </unless>
+        <if country="DE|GB">
+            <apkfile title="MEDION 2 Go" source="apps/com.medion.medion2go.apk"/>
+        </if>
+        
+    <!-- =============================================================== -->
+    <!-- ALDI Talk, ALDI Photo, ALDI life, ALDI Shopping applications    -->
+    <!-- =============================================================== -->
+        <if market="ALDI">
+            <switch>
+                <case country="DE">
+                    <!-- DEFERRED!! <apkfile title="ALDI life Musik" source="apps/com.rhapsody.alditalk.apk" msn="20061312"/> -->
+                    <if books="true">
+                        <!-- DEFERRED!! <apkfile title="ALDI life" source="apps/com.medion.aldilife.apk" /> -->
+                        <!-- DEFERRED!! <apkfile title="ALDI life reader" source="apps/com.medion.aldilifereader.apk" msn="40061409"/> -->
+                    </if>
+                    <unless imei="">
+                        <apkfile title="ALDI Talk" source="apps/de.eplus.mappecc.client.android.alditalk.apk" msn="40044460"/>
+                    </unless>
+                    <apkfile title="ALDI Photo" source="apps/com.medion.aldiphotonew.apk" msn="40048743"/>
+
+                    <if region="Nord">
+                        <apkfile title="ALDI DE Nord" source="apps/de.aldiNord.android.apk" msn="40048748"/>
+                    </if>
+                    <elseif region="Sued">
+                        <apkfile title="ALDI DE Sued" source="apps/de.apptiv.business.android.aldi_de.apk" msn="40048750"/>
+                    </elseif>
+                </case>
+                <case country="CH">
+                    <apkfile title="ALDI CH" source="apps/de.apptiv.business.android.aldi_ch.apk" msn="40048747"/>
+                    <apkfile title="ALDI Photo" source="apps/com.medion.aldiphotonew.apk" msn="40048743"/>
+                </case>
+                <case country="AT">
+                    <apkfile title="Hofer" source="apps/de.apptiv.business.android.aldi_at.apk" msn="40048745"/>
+                    <apkfile title="Hofer Photo" source="apps/com.ephoto.photonew.apk" msn="40048744"/>
+                    <unless imei="">
+                        <apkfile title="HoT" source="apps/com.austrianapps.ventocom.hofer.apk" msn="40053417"/>
+                    </unless>
+                </case>
+                <case country="BE">
+                    <apkfile title="ALDI BE" source="apps/be.aldi.android.apk" msn="40050029"/>
+                    <unless imei="">
+                        <apkfile title="ALDI Talk" source="apps/com.medion.alditalkselfcare.apk" msn="pending"/>
+                    </unless>
+                </case>
+                <case country="DK">
+                    <apkfile title="ALDI DK" source="apps/dk.aldi.android.apk" msn="40050030"/>
+                </case>
+                <case country="FR">
+                    <apkfile title="ALDI FR" source="apps/fr.aldi.android.apk" msn="40050032"/>
+                </case>
+                <case country="NL">
+                    <apkfile title="ALDI NL" source="apps/nl.aldi.android.apk" msn="40050033"/>
+                </case>
+                <case country="PL">
+                    <apkfile title="ALDI PL" source="apps/pl.aldi.android.apk" msn="40050034"/>
+                </case>
+                <case country="PT">
+                    <apkfile title="ALDI PT" source="apps/pt.aldi.android.apk" msn="40050035"/>
+                </case>
+                <case country="AU">
+                    <apkfile title="ALDI AU" source="apps/de.apptiv.business.android.aldi_au.apk" msn="40048746"/>
+                </case>
+                <case country="HU">
+                    <apkfile title="ALDI HU" source="apps/de.apptiv.business.android.aldi_hu.apk" msn="40048751"/>
+                </case>
+                <case country="IE">
+                    <apkfile title="ALDI IE" source="apps/de.apptiv.business.android.aldi_ie.apk" msn="40048752"/>
+                </case>
+                <case country="SI">
+                    <apkfile title="ALDI SI" source="apps/de.apptiv.business.android.aldi_si.apk" msn="40048753"/>
+                </case>
+                <case country="GB">
+                    <apkfile title="ALDI UK" source="apps/de.apptiv.business.android.aldi_uk.apk" msn="40048754"/>
+                </case>
+                <case country="US">
+                    <apkfile title="ALDI US" source="apps/de.apptiv.business.android.aldi_us.apk" msn="40048755"/>
+                </case>
+            </switch>
+        </if>   
+    
+    <!-- =========================================================== -->
+    <!-- Widgets for the home screen                                 -->
+    <!-- =========================================================== -->
+		
+    <widget title="Clock" component="com.android.deskclock/com.android.alarmclock.AnalogAppWidgetProvider" screen="1" x="1" y="0" width="2" height="2"/>
+        <!--
+        <if market="ALDI" country="DE">
+            <widget title="ALDI life" component="com.rhapsody.alditalk/com.rhapsodycore.widget.OneByFourWidgetProvider" screen="1" x="1" y="2" width="4" height="1"/>
+        </if>
+        -->
+		
+        <widget title="Bookmarks" component="com.medion.android.installer/com.medion.android.widgets.BookmarkWidget" screen="1" x="3" y="0" width="2" height="2"/>
+       
+    <!-- =========================================================== -->
+    <!-- Hotseat                                                     -->
+    <!-- =========================================================== -->
+        <hotseat>
+            <gotoxy x="0"/>
+            <shortcut title="Google Chrome" type="app" target="com.android.chrome"/>
+            <shortcut title="Google Mail" type="app" target="com.google.android.gm"/>
+            <shortcut title="Calendar" type="app" target="com.google.android.calendar"/>
+            <gotoxy x="4"/>
+            <shortcut title="Google Maps" type="app" target="com.google.android.apps.maps/com.google.android.maps.MapsActivity"/>
+            <shortcut title="YouTube" type="app" target="com.google.android.youtube"/>
+            <shortcut title="Play Store" type="app" target="com.android.vending"/>
+        </hotseat>  
+    
+    <!-- =========================================================== -->
+    <!-- First Screen                                                -->
+    <!-- =========================================================== -->
+
+    <!-- Bottom Row -->
+    <!-- ========== -->    
+    <!-- Google stuff -->
+        <gotoxy screen="1" x="1" y="4"/>
+        <folder title="Google">
+            <shortcut title="Google" type="app" target="com.google.android.googlequicksearchbox"/>
+            <shortcut title="Play Music" type="app" target="com.google.android.music"/>
+            <shortcut title="Play Movies" type="app" target="com.google.android.videos"/>
+            <shortcut title="Hangouts" type="app" target="com.google.android.talk"/>
+            <shortcut title="Photos" type="app" target="com.google.android.apps.photos"/>
+            <shortcut title="Play Books" type="app" target="com.google.android.apps.books"/>
+            <shortcut title="Play Kiosk" type="app" target="com.google.android.apps.magazines"/>
+            <shortcut title="Play Games" type="app" target="com.google.android.play.games"/>
+        </folder>
+
+        <folder title="Create">
+            <shortcut title="Drive" type="app" target="com.google.android.apps.docs"/>
+            <shortcut title="Docs" type="app" target="com.google.android.apps.docs.editors.docs"/>
+            <shortcut title="Sheets" type="app" target="com.google.android.apps.docs.editors.sheets"/>
+            <shortcut title="Slides" type="app" target="com.google.android.apps.docs.editors.slides"/>
+            <shortcut title="Keep" type="app" target="com.google.android.keep"/>
+        </folder>
+   
+    <!-- ALDI Stuff per country -->
+        <if market="ALDI">
+            <switch>
+                <case country="DE">
+                    <folder title="ALDI">
+                        <shortcut title="ALDI life Musik" type="deferred" target="com.rhapsody.alditalk"/>
+                        <if books="true">
+                            <shortcut title="ALDI life Books" type="deferred" target="com.medion.aldilife"/>
+                            <shortcut title="ALDI life Reader" type="deferred" target="com.medion.aldilifereader"/>
+                        </if>
+                        <if region="Nord">
+                            <shortcut title="ALDI DE Nord" type="app"/>
+                        </if>
+                        <elseif region="Sued">
+                            <shortcut title="ALDI DE Sued" type="app"/>
+                        </elseif>
+                        <shortcut title="ALDI Photo" type="app"/>
+                        <unless imei="">
+                            <shortcut title="ALDI Talk" type="app"/>
+                        </unless>
+                    </folder>
+                </case>
+                <case country="CH">
+                    <folder title="ALDI">
+                        <shortcut title="ALDI CH" type="app"/>
+                        <shortcut title="ALDI Photo" type="app"/>
+                    </folder>
+                </case>
+                <case country="AT">
+                    <folder title="HOFER">
+			<shortcut title="Hofer life Music" type="deferred" target="com.rhapsody.hofer" icon="icons/com.rhapsody.hofer.png"/>
+			<shortcut title="Hofer Life" type="uri" target="https://www.hoferlife.at" icon="icons/hofer-life.png"/>
+                        <shortcut title="Hofer" type="app"/>
+                        <shortcut title="Hofer Photo" type="app"/>
+                        <unless imei="">
+                            <shortcut title="HoT" type="app"/>
+                        </unless>
+                    </folder>
+                </case>
+                <case country="BE">
+                    <folder title="ALDI">
+                        <shortcut title="ALDI BE" type="app"/>
+                        <unless imei="">
+                            <shortcut title="ALDI Talk" type="app"/>
+                        </unless>
+                    </folder>
+                </case>
+                <case country="NL">
+                    <shortcut title="ALDI NL" type="app"/>
+                </case>
+                <case country="DK">
+                    <shortcut title="ALDI DK" type="app"/>
+                </case>
+                <case country="FR">
+                    <shortcut title="ALDI FR" type="app"/>
+                </case>
+                <case country="PL">
+                    <shortcut title="ALDI PL" type="app"/>
+                </case>
+                <case country="PT">
+                    <shortcut title="ALDI PT" type="app"/>
+                </case>
+                <case country="AU">
+                    <shortcut title="ALDI AU" type="app"/>
+                </case>
+                <case country="HU">
+                    <shortcut title="ALDI HU" type="app"/>
+                </case>
+                <case country="IE">
+                    <shortcut title="ALDI IE" type="app"/>
+                </case>
+                <case country="SI">
+                    <shortcut title="ALDI SI" type="app"/>
+                </case>
+                <case country="GB">
+                    <shortcut title="ALDI UK" type="app"/>
+                </case>
+                <case country="US">
+                    <shortcut title="ALDI US" type="app"/>
+                </case>
+            </switch>
+        </if>
+        <else>
+            <shortcut title="McAfee" type="app"/>
+        </else>
+    <!-- Partner Apps -->
+        <unless country="NL">
+            <folder title="Apps">
+                <unless market="ALDI">
+                    <shortcut title="News Republic" type="app"/>
+                    <shortcut title="HRS" type="app"/>
+                    <if country="DE">
+		    	<shortcut title="Purlife" type="uri" target="https://pur-life.com/co/medion" icon="icons/purlife.png"/>
+                    </if>
+                </unless>
+                <if market="ALDI">
+                    <shortcut title="McAfee" type="app"/>
+                </if>
+                <shortcut title="TeamViewer" type="app"/>
+                <shortcut title="eBay" type="app"/>
+                <shortcut title="Skype" type="app"/>
+            </folder>
+        </unless>
+    
+    <!-- second row from the bottom -->
+    <!-- ========================== -->
+
+        <gotoxy screen="1" x="1" y="3"/>
+        <shortcut title="Updates" type="app" target="com.medion.android.updater"/>
+        <shortcut title="Manual" type="app" target="com.medion.android.manual2"/>
+
+        <if country="DE">
+            <shortcut title="Registration" type="app" target="com.medion.android.registration"/>
+        </if>
+        <else>
+            <shortcut title="Connections" type="app" target="com.medion.android.connections"/>
+        </else>
+        <folder title="MEDION">
+            <if country="DE|GB">
+                <shortcut title="MEDION 2 Go" type="app"/>
+            </if>
+            <if country="DE">
+                <shortcut title="Connections" type="app" target="com.medion.android.connections"/>
+            </if>
+            <shortcut title="Wallpapers" type="app" target="com.medion.wallpapers"/>        
+        <!--<shortcut title="Diagnostics" type="app" target="com.medion.android.diagnostics"/>-->
+    <!--<shortcut title="Explorer" type="app" target="com.medion.medionexplorer"/>-->
+        </folder>
+        
+    
+    <!-- =========================================================== -->
+    <!-- Second Screen                                               -->
+    <!-- =========================================================== -->
+    <!-- <gotoxy screen="2" x="1" y="4"/> -->
+    
+    <!-- =============================================================== -->
+    <!-- Browser bookmarks                                               -->
+    <!-- =============================================================== -->
+    <!-- ALDI -->
+        <if market="ALDI">
+            <if country="DE">
+                <if region="Nord">
+                    <bookmark title="ALDI Nord" url="http://www.aldi-nord.de/" thumbnail="thumbs/aldi.png"/>
+                </if>
+                <elseif region="Sued">
+                    <bookmark title="ALDI Sued" url="http://www.aldi-sued.de/" thumbnail="thumbs/aldi.png"/>
+                </elseif>
+                <else>
+                    <bookmark title="ALDI" url="http://www.aldi.de/" thumbnail="thumbs/aldi.png"/>
+                </else>
+            <!-- only www.aldifotos.de for all, as of Oct. 2015 -->
+                <bookmark title="ALDI Foto Service" url="http://www.aldifotos.de/" thumbnail="thumbs/aldifoto.png"/>
+                <bookmark title="ALDI life" url="http://www.aldilife.de/" thumbnail="thumbs/aldilife.png"/>
+                <bookmark title="ALDI Reisen" url="http://www.aldireisen.de/" thumbnail="thumbs/aldireisen.png"/>
+                <bookmark title="ALDI Talk" url="http://www.alditalk.de/" thumbnail="thumbs/alditalk.png"/>
+                <bookmark title="ALDI Blumen Service" url="http://www.aldi-blumenservice.de/" thumbnail="thumbs/aldiblumen.png"/>
+            </if>
+            <elseif country="AT">
+                <bookmark title="HOFER" url="http://www.hofer.at/" thumbnail="thumbs/hofer.png"/>
+                <bookmark title="HOFER Foto Service" url="http://www.hoferfotos.at/" thumbnail="thumbs/hoferfoto.png"/>
+                <bookmark title="HOFER Reisen" url="http://www.hofer-reisen.at/" thumbnail="thumbs/hoferreisen.png"/>
+            </elseif>
+            <elseif country="CH">
+                <if language="fr">
+                    <bookmark title="ALDI" url="http://www.aldi-suisse.ch/index_FRA_HTML.htm" thumbnail="thumbs/aldi-ch.png"/>
+                    <bookmark title="ALDI Service Photo" url="http://www.aldi-suisse-photo.ch/?L=fr" thumbnail="thumbs/aldifoto-ch.png"/>
+                    <bookmark title="ALDI Tours" url="http://www.aldi-suisse-tours.ch/?lang=f" thumbnail="thumbs/aldireisen-ch.png"/>
+                </if>
+                <elseif language="it">
+                    <bookmark title="ALDI" url="http://www.aldi-suisse.ch/index_ITA_HTML.htm" thumbnail="thumbs/aldi-ch.png"/>
+                    <bookmark title="ALDI Servizio Foto" url="http://www.aldi-suisse-photo.ch/?L=it" thumbnail="thumbs/aldifoto-ch.png"/>
+                    <bookmark title="ALDI Tours" url="http://www.aldi-suisse-tours.ch/?lang=i" thumbnail="thumbs/aldireisen-ch.png"/>
+                </elseif>
+                <else>
+                    <bookmark title="ALDI" url="http://www.aldi-suisse.ch/index_DEU_HTML.htm" thumbnail="thumbs/aldi-ch.png"/>
+                    <bookmark title="ALDI Foto Service" url="http://www.aldi-suisse-photo.ch/?L=de" thumbnail="thumbs/aldifoto-ch.png"/>
+                    <bookmark title="ALDI Tours" url="http://www.aldi-suisse-tours.ch/?lang=d" thumbnail="thumbs/aldireisen-ch.png"/>
+                </else>
+            </elseif>
+            <elseif country="NL">
+                <bookmark title="ALDI" url="http://www.aldi.nl/" thumbnail="thumbs/aldi.png"/>
+                <bookmark title="ALDI Foto" url="http://www.aldifoto.nl/" thumbnail="thumbs/aldifoto.png"/>
+            </elseif>
+            <elseif country="DK">
+                <bookmark title="ALDI" url="http://www.aldi.dk/" thumbnail="thumbs/aldi.png"/>
+            </elseif>
+            <elseif country="LU">
+        <!--  Note: Special case here! -->
+                <if language="fr">
+                    <bookmark title="ALDI" url="http://aldi-lf.aldi.lu" thumbnail="thumbs/aldi.png"/>
+                </if>
+                <else>
+            <!--  Unreachable, would need manual selection -->
+                    <bookmark title="ALDI" url="http://aldi-ld.aldi.lu" thumbnail="thumbs/aldi.png"/>
+                </else>
+            </elseif>
+            <elseif country="BE">
+                <if language="nl">
+                    <bookmark title="ALDI" url="http://aldi-bn.aldi.be" thumbnail="thumbs/aldi.png"/>
+                    <bookmark title="ALDI Talk" url="http://www.medionmobile.be/nl" thumbnail="thumbs/alditalk.png"/>
+                </if>
+                <elseif language="fr">
+                    <bookmark title="ALDI" url="http://aldi-bf.aldi.be" thumbnail="thumbs/aldi.png"/>
+                    <bookmark title="ALDI Talk" url="http://www.medionmobile.be/fr" thumbnail="thumbs/alditalk.png"/>
+                </elseif>
+                <else>
+            <!--  Unreachable, would need manual selection -->
+                    <bookmark title="ALDI" url="http://aldi-bd.aldi.be" thumbnail="thumbs/aldi.png"/>
+                    <bookmark title="ALDI Talk" url="http://www.medionmobile.be/de" thumbnail="thumbs/alditalk.png"/>
+            <bookmark title="ALDI Foto Service" url="http://www.aldifoto.be/de/index.html" thumbnail="thumbs/aldifoto.png"/>
+                </else>
+            </elseif>
+            <else>
+                <bookmark title="ALDI" url="http://www.aldi.com/" thumbnail="thumbs/aldi.png"/>
+            </else>
+        </if>
+    <!-- MediaMarkt -->
+        <if market="MEDIA">
+            <bookmark title="MediaMarkt" url="http://www.mediamarkt.de" thumbnail="thumbs/mediamarkt.png"/>
+        </if>
+    <!-- MEDION -->
+        <unless market="MEDIA">
+            <if country="DE">
+                <bookmark title="MEDION Shop" url="http://www.medion.com/de/" thumbnail="thumbs/medionshop.png"/>
+			
+            </if>
+            <elseif country="AT">
+                <bookmark title="MEDION Shop" url="http://www.medion.com/at/" thumbnail="thumbs/medionshop.png"/>
+            </elseif>
+            <if language="de">
+                <bookmark title="MEDION Service" url="http://www.medionservice.de/" thumbnail="thumbs/medionservice.png"/>
+                <bookmark title="MEDION Community" url="http://community.medion.com/" thumbnail="thumbs/medioncommunity.png"/>
+            </if>
+        </unless>
+    <!-- Everything else -->
+        <if country="DE">
+            <bookmark title="Aktuelle Nachrichten" url="http://www.n-tv.de/" thumbnail="thumbs/ntv.png"/>
+        </if>
+        <if country="DE">
+            <bookmark title="Google" url="http://www.google.de/" thumbnail="thumbs/google.png"/>
+        </if>
+        <elseif country="AT">
+            <bookmark title="Google" url="http://www.google.at/" thumbnail="thumbs/google.png"/>
+        </elseif>
+        <elseif country="CH">
+            <bookmark title="Google" url="http://www.google.ch/" thumbnail="thumbs/google.png"/>
+        </elseif>
+        <else>
+            <bookmark title="Google" url="http://www.google.com/" thumbnail="thumbs/google.png"/>
+        </else>
+        <bookmark title="Twitter" url="http://twitter.com/" thumbnail="thumbs/twitter.png"/>
+        <bookmark title="Facebook" url="http://www.facebook.com/" thumbnail="thumbs/facebook.png"/>
+        <bookmark title="Wikipedia" url="http://www.wikipedia.org/" thumbnail="thumbs/wikipedia.png"/>
+        
+    <!-- =================================================================== -->
+    <!-- Wallpaper                                                           -->
+    <!-- =================================================================== -->
+        <wallpaper home="3" lock="2"/>
+    </elseif>
+    
+<!-- =================================================================== -->
+<!-- Update cases                                                        -->
+<!-- =================================================================== -->
+
+</misc>
